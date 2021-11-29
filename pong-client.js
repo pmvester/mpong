@@ -80,7 +80,6 @@ class Game {
         this.players.push(createPlayer(message.player))
         break
       case 'player_join_confirmation':
-        // CHECK order of width and height
         this.boundary = new Rectangle(
           Vector2d.fromPosition(message.boundary.position), 
           message.boundary.width,
