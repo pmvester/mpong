@@ -7,7 +7,7 @@ export class Ball {
   constructor(position, velocity) {
     this.geometry = new Rectangle(position, ballDiameter, ballDiameter)
     this.velocity = velocity
-    this.previousPosition = null
+    this.previousPosition = position
   }
 
   render(ctx) {

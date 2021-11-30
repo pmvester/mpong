@@ -8,15 +8,24 @@ export class Vector2d {
     return new Vector2d(position.x, position.y)
   }
 
-  static combine(...vectors) {
-    const x = vectors.reduce((x, v) => x + v.x)
-    const y = vectors.reduce((y, v) => y + v.y)
-
-    return new Vector2d(x / vectors.length, y / vectors.length)
+  reverse() {
+    return new Vector2d(-this.x, -this.y)
   }
 
-  magnitude() {
-    return Math.sqrt(this.x * this.x, this.y * this.y)
+  // CHECK
+  randomizeAngle(minComponent) {
+    const randomComponent = (min) => {
+      const max = 1
+      const value = Math.random() * (max - min + 1) + min
+      const sign = Math.random() < 0.5 ? 1 : -1
+
+      return value * sign
+    }
+
+    const magnitude = this.magnitude()
+    const angle = new Vector2d(randomComponent(minComponent), randomComponent(minComponent)).normalize()
+
+    return angle.multiplyScalar(magnitude)
   }
 
   normalize() {
@@ -27,6 +36,10 @@ export class Vector2d {
 
   dot(other) {
     return this.x * other.x + this.y * other.y
+  }
+
+  magnitude() {
+    return Math.sqrt(this.x * this.x + this.y * this.y)
   }
 
   add(other) {

@@ -10,6 +10,11 @@
           display: flex;
           align-items: center;
           justify-content: center;
+          flex-direction: column;
+      }
+      #score {
+        font-size: 24px;
+        font-family: "Arial Black", serif;
       }
       #gameCanvas {
         border: 6px solid #eee;
@@ -19,6 +24,7 @@
 </head>
 <body>
   <div class="container">
+    <div id="score">0 - 0</div>
     <canvas id="gameCanvas" height="500" width="750"></canvas>
   </div>
 </body>

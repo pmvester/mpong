@@ -9,6 +9,7 @@ class Player {
     this.id = uuidv4()
     this.ws = ws
     this.paddle = paddle
+    this.score = 0
 
     this.ws.on('message', (data) => {
       const message = JSON.parse(data)
@@ -57,7 +58,8 @@ const paddleInset = 20
 class Game {
   constructor() {
     this.boundary = new Rectangle(new Vector2d(0,0), 750, 500) 
-    this.ball = new Ball(new Vector2d(100, 100), new Vector2d(-2, 3))
+    // this.ball = new Ball(new Vector2d(100, 100), new Vector2d(-2, 3))
+    this.ball = new Ball(this.boundary.middle(), new Vector2d(-2, 3))
     this.players = new Players()
     this.interval = null
     this.playing = false
@@ -83,7 +85,7 @@ class Game {
         this.players.delete(player)
       })
 
-      if (this.players.count() > 1 && !this.playing) {
+      if (this.players.count() === 2 && !this.playing) {
         this.startGame(this.tickrate)
       }
     })
@@ -144,17 +146,57 @@ class Game {
     this.players.broadcast(update)
   }
 
+  checkIfScored() {
+    if (!this.ball.geometry.isOutside(this.boundary)) {
+      return
+    }
+
+    const side = this.ball.geometry.getRelativeSideFrom(this.boundary)
+
+    if (!(side === 'left' || side === 'right')) {
+      return
+    }
+
+    let player = this.players.players[side === 'left' ? 1 : 0]
+    player.score++
+
+    this.players.broadcast({
+      type: 'game_score_update',
+      score: Object.fromEntries(this.players.players.map((p) => {
+        return [p.id, p.score]
+      }))
+    })
+
+    this.ball.geometry.position = this.boundary.middle()
+    this.ball.velocity = this.ball.velocity.randomizeAngle(0.5)
+  }
+
   resolveBallCollision() {
-    const outsideNormal = this.boundary.getInsideCollisionNormal(this.ball.geometry)
-    if (outsideNormal != null) {
-      if (outsideNormal.y === 1 || outsideNormal.y === -1) {
-        this.ball.bounce(outsideNormal)
+    const outsideBouundary = this.ball.geometry.getRelativeSideFrom(this.boundary)
+
+    if (outsideBouundary) {
+      const sideOfBoundary = this.ball.geometry.getRelativeSideFrom(this.boundary)
+      const normal = Rectangle.getInsideCollisionNormal(sideOfBoundary)
+      
+      this.ball.bounce(normal)
+      return
+    }
+
+    for (const p of this.players.players) {
+      if (p.paddle.geometry.intersects(this.ball.geometry)) {
+        const sideOfPaddle = p.paddle.geometry.getIntersectingSide(this.ball.geometry)
+        const normal = Rectangle.getOutsideCollisionNormal(sideOfPaddle)
+  
+        this.ball.bounce(normal)
+  
+        return
       }
     }
   }
 
   loop() {
     this.ball.update()
+    this.checkIfScored()
     this.resolveBallCollision()
     this.broadcastGameState()
   }

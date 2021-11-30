@@ -10,16 +10,16 @@ class Player {
 }
 
 class Game {
-  constructor(canvas, ws) {
+  constructor(canvas, score, ws) {
     this.canvas = canvas
+    this.score = score
     this.ctx = canvas.getContext('2d')
     this.ws = ws
 
     this.boundary = new Rectangle(new Vector2d(0,0), 750, 500)
     this.players = []
     this.player = null
-    // position ball somewhere in the middle
-    this.ball = new Ball(new Vector2d(Math.floor(this.boundary.width / 2), Math.floor(this.boundary.height / 2)))
+    this.ball = new Ball(this.boundary.middle())
 
     ws.onmessage = (event) => {
       const message = JSON.parse(event.data)
@@ -40,8 +40,6 @@ class Game {
       if (e.code === keyMoveUp) {
         paddle.move(-step)
         this.sendPaddlePosition()
-        for (const p of this.players) {
-        }
       } else if (e.code === KeyMoveDown) {
         paddle.move(step)
         this.sendPaddlePosition()
@@ -53,6 +51,7 @@ class Game {
     const data = {
       position: this.player.paddle.geometry.position
     }
+
     this.ws.send(JSON.stringify(data))
   }
 
@@ -102,18 +101,19 @@ class Game {
         for (const ps of message.players) {
           for (const p of this.players) {
             if (p.id === ps.id) {
-              // p.paddle.geometry.position = Vector2d.fromPosition(ps.paddle.geometry.position)
-              p.paddle.geometry.position.y = ps.paddle.geometry.position.y
+              p.paddle.geometry.position = Vector2d.fromPosition(ps.paddle.geometry.position)
             }
           }
         }
+        break
+      case 'game_score_update':
+        this.score.innerText = Object.values(message.score).join(' - ')
+        break
     }
   }
 }
 
 window.onload = () => {
-  const wss = "ws://" + location.hostname + ":8081"
-  console.log('connecting to ' + wss)
-  let ws = new WebSocket(wss, "pong")
-  new Game(document.getElementById('gameCanvas'), ws)
+  let ws = new WebSocket("ws://" + location.hostname + ":8081", "pong")
+  new Game(document.getElementById('gameCanvas'), document.getElementById('score'), ws)
 }
