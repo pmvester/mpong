@@ -19,7 +19,6 @@ export class Rectangle {
     if (this.position.x <= geometry.position.x) return 'left'
     if (this.position.x + this.width >= geometry.position.x + geometry.width) return 'right'
     if (this.position.y <= geometry.position.y) return 'top'
-    // CHECK geometry.position.y
     if (this.position.y + this.height >= geometry.position.y + geometry.height) return 'bottom'
   }
 
