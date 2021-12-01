@@ -36,7 +36,6 @@ export class Rectangle {
       this.position.y <= geometry.position.y + geometry.height
   }
 
-  // CHECK
   getIntersectingSide(geometry) {
     const geometryBottom = geometry.position.y + geometry.height
     const thisBottom = this.position.y + this.height
