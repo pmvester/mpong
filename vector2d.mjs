@@ -12,7 +12,6 @@ export class Vector2d {
     return new Vector2d(-this.x, -this.y)
   }
 
-  // CHECK
   randomizeAngle(minComponent) {
     const randomComponent = (min) => {
       const max = 1
