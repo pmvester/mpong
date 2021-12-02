@@ -7,9 +7,6 @@ export class Rectangle {
     this.height = height
   }
 
-  // 𝑟=𝑑−2(𝑑⋅𝑛)𝑛
-
-
   middle() {
     return new Vector2d((this.width / 2) + this.position.x, (this.height / 2) + this.position.y )
   }

@@ -23,6 +23,8 @@ export class Ball {
     this.previousPosition = this.geometry.position
     const ballSpeed = this.velocity.magnitude()
     const ballUnitVelocity = this.velocity.normalize()
+
+    // 𝑟=𝑑−2(𝑑⋅𝑛)𝑛 
     const reflection = ballUnitVelocity.subtract(normal.multiplyScalar(2 * ballUnitVelocity.dot(normal)))
 
     this.velocity = reflection.multiplyScalar(ballSpeed)
