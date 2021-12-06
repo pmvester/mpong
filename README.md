@@ -17,5 +17,5 @@ node express-server.cjs
 ```
 ### Play game
 Open two (2) web browsers pointing to:
-https://localhost:8080
+http://localhost:8080
 Move paddles by pressing 'w' (up) and 's' (down).
